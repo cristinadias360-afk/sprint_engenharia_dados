@@ -8,8 +8,6 @@
 ## 1. Contexto de Negócio e Perguntas (Etapas 2 e 4.1)
 
 ### Contexto
-*(Descreva aqui: qual problema de negócio você está resolvendo e por quê ele importa.
-Exemplo de ponto de partida — ajuste à sua realidade.)*
 
 Este trabalho analisa fatores associados ao risco de inadimplência de clientes de crédito,
 utilizando dados cadastrais e de histórico de crédito externo (bureau).
@@ -34,14 +32,9 @@ utilizando dados cadastrais e de histórico de crédito externo (bureau).
 4. Clientes com dívidas ativas em outras instituições (bureau) têm perfil de risco diferente dos
    clientes sem histórico de crédito externo?
 
-*(Adapte/adicione perguntas conforme avançar na exploração dos dados.)*
-
 ---
 
 ## 2. Carga dos Dados (Etapa 4.2)
-
-*(Descreva aqui: como os arquivos CSV foram obtidos, como foram enviados ao Databricks —
-upload direto, Volumes do Unity Catalog, etc. — e referencie o notebook responsável.)*
 
 - Script: [`notebooks/01_bronze_ingestion.py`](notebooks/01_bronze_ingestion.py)
 - Local de armazenamento na nuvem: um Volume do Unity Catalog, criado no schema `dados_credito`
@@ -150,9 +143,6 @@ Contém todos os campos de `silver.clientes`, mais:
 agregação (contagem de clientes + taxa média de `target`), uma por pergunta de negócio — campos
 autoexplicativos pelos nomes, detalhados nos comentários de tabela dos notebooks.
 
-*(Inserir aqui os screenshots do Unity Catalog / Data Explorer confirmando os comentários
-gravados — abas "Overview" de cada tabela.)*
-
 **Evidência — comentários gravados no Unity Catalog:**
 
 `silver.clientes`:
@@ -187,7 +177,8 @@ gravados — abas "Overview" de cada tabela.)*
 
 ## 4. Pipeline de Dados (Etapa 4.4)
 
-*(Explique como organizou o ETL: notebooks separados por camada, ordem de execução.)*
+O pipeline foi organizado em 4 notebooks, um por etapa da arquitetura medalhão, executados nesta
+ordem sequencial:
 
 | Ordem | Notebook | O que faz |
 |---|---|---|
@@ -196,10 +187,13 @@ gravados — abas "Overview" de cada tabela.)*
 | 3 | [`03_gold_modeling.py`](notebooks/03_gold_modeling.py) | Tabela fato + 4 tabelas agregadas (1 por pergunta), comentários de catálogo |
 | 4 | [`04_qualidade_e_analise.py`](notebooks/04_qualidade_e_analise.py) | Checks de qualidade e análise gráfica (matplotlib) por pergunta |
 
-*(Documentar principais transformações, ex: "Join entre application_train e bureau agregado
-pela chave SK_ID_CURR para trazer métricas de crédito externo por cliente".)*
-
-*(Inserir screenshots confirmando que as tabelas foram persistidas — `SHOW TABLES`, Catalog Explorer.)*
+**Principais transformações do pipeline:**
+- Bronze → Silver: tipagem e limpeza de `application_train_raw` e `bureau_raw`, com tratamento
+  específico da anomalia `DAYS_EMPLOYED = 365243` (ver seção 5).
+- Silver → Gold: agregação de `silver.historico_credito` por `sk_id_curr` (contagem de créditos,
+  soma de valores e atrasos) seguida de LEFT JOIN com `silver.clientes`, formando
+  `gold.fato_risco_cliente`. As 4 tabelas `gold.agg_risco_por_*` são agregações derivadas dessa
+  tabela fato, uma por pergunta de negócio.
 
 Evidência da execução da camada Silver — 307.511 linhas em `silver.clientes` e 1.716.428 linhas
 em `silver.historico_credito`, confirmando que a limpeza preservou o volume total de registros
@@ -254,6 +248,11 @@ chaves, o que foi confirmado (não assumido) pela verificação.
 | `renda_total` | 25.650 | 112.500 | 146.700 | 202.500 | **117.000.000** | Outlier extremo confirmado: o valor máximo é ~800x a mediana. Não removido das tabelas Gold (não distorce agregações por faixa), mas seria candidato a tratamento (cap ou remoção) num modelo preditivo |
 | `idade` | 20 | 33 | 43 | 53 | 69 | Sem anomalias — intervalo plausível para clientes de crédito |
 
+Evidência da execução (resumo estatístico gerado diretamente no Databricks):
+
+![Resumo estatístico de renda_total e idade](assets/databricks_qualidade_outliers.png)
+
+
 **Conclusão da verificação:** a base está com boa qualidade estrutural (sem duplicatas, poucos
 nulos nos atributos centrais). O único ponto de atenção real é o outlier de renda, já mapeado, e a
 cobertura parcial dos scores externos — ambos documentados e considerados na etapa de análise.
@@ -262,10 +261,16 @@ cobertura parcial dos scores externos — ambos documentados e considerados na e
 
 ## 6. Análise de Dados (Etapa 4.5)
 
-*(Para cada pergunta da seção 1, apresentar a query/análise, o resultado — com screenshot — e a
-discussão do que o resultado significa no contexto do problema.)*
+Para cada pergunta definida na seção 1, apresenta-se a query/abordagem utilizada, o resultado
+(com evidência de execução no Databricks) e a discussão do que o resultado significa no contexto
+do problema.
 
 ### Pergunta 1: Taxa de inadimplência por faixa de renda, contrato e escolaridade
+
+**Execução no Databricks:**
+
+![Execução no Databricks — taxa por faixa de renda](assets/databricks_pergunta1_renda.png)
+![Execução no Databricks — taxa por escolaridade](assets/databricks_pergunta1_escolaridade.png)
 
 **Por faixa de renda:**
 
@@ -293,6 +298,10 @@ discussão do que o resultado significa no contexto do problema.)*
 
 ### Pergunta 2: Clientes com mais créditos no bureau têm maior taxa de default?
 
+**Execução no Databricks:**
+
+![Execução no Databricks — taxa por qtd. de créditos no bureau](assets/databricks_pergunta2_bureau.png)
+
 ![Taxa de inadimplência x Nº de créditos no bureau](assets/q2_taxa_por_qtd_creditos_bureau.png)
 
 | Nº créditos no bureau | Qtd. clientes | Taxa de inadimplência |
@@ -313,6 +322,11 @@ discussão do que o resultado significa no contexto do problema.)*
 
 ### Pergunta 3: A idade e o tempo de emprego influenciam o risco de inadimplência?
 
+**Execução no Databricks:**
+
+![Execução no Databricks — taxa por faixa etária](assets/databricks_pergunta3_idade.png)
+![Execução no Databricks — anos de emprego por faixa etária](assets/databricks_pergunta3_anos_emprego.png)
+
 ![Taxa de inadimplência por faixa etária](assets/q3_taxa_por_idade.png)
 ![Média de anos de emprego por faixa etária](assets/q3_anos_emprego_por_idade.png)
 
@@ -332,6 +346,11 @@ discussão do que o resultado significa no contexto do problema.)*
   as 4 perguntas.
 
 ### Pergunta 4: Clientes com dívida ativa externa têm perfil de risco diferente?
+
+**Execução no Databricks:**
+
+![Execução no Databricks — taxa por perfil de dívida externa](assets/databricks_pergunta4_divida_externa.png)
+![Tabela de resultado — perfil de dívida externa](assets/databricks_pergunta4_tabela.png)
 
 ![Taxa de inadimplência por perfil de dívida externa](assets/q4_taxa_por_divida_externa.png)
 
