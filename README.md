@@ -1,6 +1,7 @@
 # MVP — Pipeline de Dados na Nuvem: Risco de Crédito
 
 > Trabalho individual da pós-graduação em Machine Learning e Analytics (PUC-Rio).
+> Aluna: Cristina Silva Dias
 > Plataforma: Databricks Free Edition. Arquitetura: Medalhão (Bronze / Silver / Gold).
 
 ---
@@ -238,8 +239,8 @@ confirmando que o tratamento foi aplicado de forma consistente.
 - `silver.clientes`: **0 duplicatas** de `sk_id_curr`.
 - `silver.historico_credito`: **0 duplicatas** de `sk_id_bureau`.
 
-A deduplicação aplicada na Silver não removeu registros — a base já chegava sem duplicatas nessas
-chaves, o que foi confirmado (não assumido) pela verificação.
+A deduplicação aplicada na Silver não removeu registros,  a base já chegava sem duplicatas nessas
+chaves, o que foi confirmado pela verificação.
 
 ### Acurácia / Outliers
 
@@ -255,7 +256,7 @@ Evidência da execução (resumo estatístico gerado diretamente no Databricks):
 
 **Conclusão da verificação:** a base está com boa qualidade estrutural (sem duplicatas, poucos
 nulos nos atributos centrais). O único ponto de atenção real é o outlier de renda, já mapeado, e a
-cobertura parcial dos scores externos — ambos documentados e considerados na etapa de análise.
+cobertura parcial dos scores externos ambos documentados e considerados na etapa de análise.
 
 ---
 
@@ -287,12 +288,12 @@ do problema.
 ![Taxa de inadimplência por escolaridade](assets/q1_taxa_por_escolaridade.png)
 
 - Discussão: renda alta reduz claramente o risco (5,2% vs. ~7,2% nas demais faixas), mas a
-  diferença entre renda baixa e média é pequena e contraintuitiva — a faixa média tem risco
+  diferença entre renda baixa e média é pequena e contraintuitiva a faixa média tem risco
   ligeiramente **maior** que a baixa, não menor. Isso sugere que renda isolada não é um preditor
   linear forte; provavelmente interage com o valor do crédito solicitado (clientes de renda média
   podem estar tomando créditos proporcionalmente mais altos).
   Já a escolaridade mostra um **gradiente muito mais nítido e monotônico**: de 3,3%
-  ("Academic degree") a 9,1% ("Lower secondary") — quase 3x de diferença entre os extremos. Isso é
+  ("Academic degree") a 9,1% ("Lower secondary") quase 3x de diferença entre os extremos. Isso é
   coerente com a literatura de risco de crédito, em que escolaridade costuma ser um proxy melhor
   de estabilidade financeira do que a renda declarada isoladamente.
 
@@ -312,7 +313,7 @@ do problema.
 | 6-10 | ~72 mil | 7,5% |
 | 11+ | ~32 mil | 8,2% |
 
-- Discussão: a relação **não é linear — é em formato de U**. Clientes sem nenhum histórico no
+- Discussão: a relação **não é linear é em formato de U**. Clientes sem nenhum histórico no
   bureau (0 créditos) têm o maior risco (10,1%), o que é um resultado relevante: a ausência de
   histórico de crédito não é neutra, é um sinal de risco por si só (provavelmente por falta de
   informação para avaliar o comportamento de pagamento). O risco cai e atinge o mínimo na faixa
@@ -360,15 +361,15 @@ do problema.
 | Com dívida ativa no bureau | 185.146 | 8,6% | R$ 911.939 |
 | Histórico quitado, sem dívida ativa | 78.345 | 5,7% | — |
 
-- Discussão: resultado **contraintuitivo e o mais interessante do trabalho**. O senso comum
+- Discussão: resultado **contraintuitivo**. O senso comum
   sugeriria que "sem dívida ativa" = menor risco e "sem histórico" = risco neutro/desconhecido.
   Os dados mostram o oposto: clientes **sem histórico algum no bureau são o grupo de maior risco**
   (10,1%), enquanto clientes com **histórico quitado** (que já provaram capacidade de pagar e
-  encerrar um crédito) são o grupo de **menor risco** (5,7%) — menos da metade do risco do primeiro
+  encerrar um crédito) são o grupo de **menor risco** (5,7%) menos da metade do risco do primeiro
   grupo. Clientes com dívida ativa ficam numa posição intermediária. Isso reforça a conclusão da
   Pergunta 2: um histórico de crédito positivo é um ativo de informação, e sua ausência pesa mais
   contra o cliente do que se poderia supor. Para uma política de crédito real, isso sugere que
-  histórico de bureau — mesmo com dívida em aberto — é preferível a nenhum histórico.
+  histórico de bureau mesmo com dívida em aberto — é preferível a nenhum histórico.
 
 ### Discussão geral
 
@@ -385,37 +386,16 @@ créditos" como variável devem considerar essa curva, não assumir uma relaçã
 
 ## 7. Autoavaliação
 
-- **Objetivos atingidos:** as 4 perguntas de negócio definidas no objetivo foram respondidas com
-  dados agregados e visualizações, com destaque para dois achados não triviais: a relação em U
-  entre quantidade de créditos no bureau e risco (Pergunta 2), e o fato de clientes sem histórico
-  de crédito externo apresentarem risco maior do que clientes com dívida ativa (Pergunta 4). O
-  pipeline completo (Bronze → Silver → Gold) foi implementado e executado com sucesso sobre a base
-  real (307.511 clientes), com tratamento documentado de uma anomalia conhecida do dataset
-  (`DAYS_EMPLOYED = 365243`) e checagem de qualidade (completude, unicidade, outliers) sem
-  problemas estruturais relevantes encontrados.
-- **Objetivos não atingidos e por quê:** *(preencher: houve alguma pergunta que ficou incompleta?
-  algum campo do catálogo que não deu tempo de detalhar?)*
-- **Dificuldades encontradas:** *(preencher: ex. o erro de sintaxe SQL nos comentários de coluna
-  por conflito de aspas, o processo de aceite de regras no Kaggle para liberar o download, etc.
-  — vale citar, mostra maturidade no relato do processo real.)*
-- **Trabalhos futuros:** incorporar tabelas adicionais do dataset original (ex.
-  `previous_application.csv`) para enriquecer o histórico de crédito interno; tratar o outlier de
-  `renda_total` com um cap estatístico caso a base seja usada para modelagem preditiva (não apenas
-  análise descritiva); investigar a interação entre renda e valor do crédito solicitado, já que a
-  Pergunta 1 mostrou que renda isolada não é um preditor linear forte.
-
+- **Objetivos atingidos:** Os principais objetivos propostos para o MVP foram atingidos. As quatro perguntas de negócio definidas inicialmente foram respondidas por meio de consultas, agregações e visualizações, permitindo identificar padrões relevantes relacionados ao risco de inadimplência.
+Além da análise exploratória, foi implementado o pipeline completo na arquitetura medalhão, contemplando as camadas Bronze, Silver e Gold, desde a ingestão dos dados brutos até a construção das tabelas analíticas utilizadas nas respostas às perguntas de negócio. O pipeline foi executado sobre uma base de 307.511 clientes, com tratamento e documentação de uma anomalia conhecida no campo DAYS_EMPLOYED e realização de verificações de qualidade relacionadas a completude, unicidade, consistência e outliers.
+Um dos principais ganhos do trabalho foi transformar os dados brutos em informações com interpretação de negócio. Entre os resultados mais relevantes, destacam-se a relação não linear entre a quantidade de créditos no bureau e a taxa de inadimplência e o maior risco observado entre clientes sem histórico de crédito externo em comparação com clientes que possuíam dívida ativa. Esses resultados demonstram que a análise permitiu ir além de simples estatísticas descritivas e identificar padrões que podem ser relevantes para decisões de crédito.
+O desenvolvimento do projeto proporcionou um aprendizado importante tanto do ponto de vista técnico quanto da aplicação dos conceitos de dados a um problema de negócio. Na parte técnica, foi possível colocar em prática conceitos de arquitetura medalhão, organização de pipelines em camadas Bronze, Silver e Gold, transformação e tipagem de dados, agregação, construção de tabelas analíticas e utilização do Unity Catalog para documentação e linhagem dos dados.
+- **Objetivos não atingidos e por quê:** Os objetivos inicialmente definidos para o MVP foram atingidos, porém algumas análises poderiam ter sido aprofundadas. Em função do prazo reduzido para desenvolvimento e entrega do projeto, foi necessário priorizar a construção e execução do pipeline completo, a organização das camadas Bronze, Silver e Gold, as verificações de qualidade e a resposta às quatro perguntas de negócio propostas.
+Como consequência dessa priorização, não foi possível explorar todo o potencial do dataset. A análise ficou concentrada nas tabelas application_train e bureau e teve caráter predominantemente descritivo. Algumas possibilidades de aprofundamento, como a incorporação de outras tabelas, a análise de interações entre variáveis e a construção de um modelo preditivo, ficaram como oportunidades para uma etapa posterior.
+- **Dificuldades encontradas:** Durante o desenvolvimento, foram encontradas dificuldades tanto na preparação dos dados quanto na utilização da plataforma. Um dos principais pontos foi o tratamento da anomalia DAYS_EMPLOYED = 365243, utilizada no dataset como representação de clientes sem vínculo empregatício formal. Foi necessário identificar esse comportamento, definir o tratamento adequado e verificar posteriormente se a transformação havia sido aplicada de forma consistente.
+Também houve dificuldades relacionadas ao processo de disponibilização dos dados pelo Kaggle e à implementação dos comentários e metadados no Unity Catalog, incluindo problemas de sintaxe relacionados ao uso de aspas. Essas situações exigiram ajustes durante a implementação do pipeline.
+Essas dificuldades foram importantes para o desenvolvimento do trabalho, pois exigiram não apenas a execução das transformações, mas também a validação dos resultados e a documentação das decisões tomadas ao longo do processo.
+- **Trabalhos futuros:** Como evolução do projeto, seria possível incorporar outras tabelas disponíveis no dataset original, especialmente previous_application.csv, ampliando o histórico de relacionamento do cliente e permitindo análises mais completas.
+Outra possibilidade seria aprofundar o tratamento dos outliers, principalmente o valor extremo identificado em renda_total, caso os dados fossem utilizados posteriormente para construção de um modelo preditivo. Também seria relevante investigar de forma mais detalhada a interação entre renda e valor do crédito solicitado, uma vez que a análise mostrou que a renda isoladamente não apresenta uma relação linear clara com o risco.
+Por fim, o pipeline construído neste MVP poderia servir como base para uma etapa posterior de modelagem preditiva, incorporando novas variáveis, análises multivariadas e técnicas de Machine Learning para avaliar de forma conjunta os fatores associados à inadimplência.
 ---
-
-## Licença dos dados
-Os dados utilizados (`application_train.csv` e `bureau.csv`) fazem parte da competição **Home
-Credit Default Risk**, hospedada no Kaggle e patrocinada pela Home Credit International a.s.
-(https://www.kaggle.com/competitions/home-credit-default-risk).
-
-Conforme a seção 7 das regras da competição ("Competition Data"), o acesso é condicionado ao
-aceite das regras da competição, e não é permitida a redistribuição dos arquivos brutos a
-terceiros que não tenham aceitado essas regras.
-
-Este trabalho utiliza os dados exclusivamente para fins educacionais, no contexto do MVP da
-pós-graduação em Machine Learning e Analytics da PUC-Rio, sem redistribuição dos arquivos brutos
-(conforme item 4 da especificação de entrega, a disponibilização dos dados não é obrigatória, e
-os CSVs não serão incluídos no repositório GitHub).
