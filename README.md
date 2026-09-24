@@ -25,7 +25,7 @@ utilizando dados cadastrais e de histórico de crédito externo (bureau).
   a.s. via Kaggle. Conforme a seção 7 ("Competition Data") das regras da competição, o acesso é
   condicionado ao aceite das regras (login + "I Understand and Accept"), e não é permitida a
   redistribuição dos arquivos brutos a terceiros. Uso neste trabalho é exclusivamente educacional,
-  sem redistribuição dos CSVs (item 4 da especificação de entrega já dispensa isso).
+  sem redistribuição dos CSVs.
 - **Tabelas brutas utilizadas:**
   - `application_train.csv` — dados cadastrais e de crédito por cliente (1 linha = 1 cliente, ~307 mil registros, 122 colunas)
   - `bureau.csv` — histórico de crédito do cliente em outras instituições financeiras (múltiplas linhas por cliente)
@@ -86,7 +86,7 @@ por pergunta de negócio.
 
 ### Catálogo de Dados
 Descrição, domínio e linhagem de cada campo (também gravados como `COMMENT`/`ALTER COLUMN` no
-Unity Catalog pelos notebooks 02 e 03 — ver screenshots abaixo).
+Unity Catalog pelos notebooks 02 e 03 ver screenshots abaixo).
 
 **Tabela: `silver.clientes`** — origem: `bronze.application_train_raw`
 
