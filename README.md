@@ -1,7 +1,8 @@
 # MVP — Pipeline de Dados na Nuvem: Risco de Crédito
 
-> Trabalho individual da pós-graduação em Machine Learning e Analytics (PUC-Rio).
-> Aluna: Cristina Silva Dias
+> Trabalho da pós-graduação em Machine Learning e Analytics (PUC-Rio).
+> Sprint: Engenharia de Dados 
+> Aluna: Cristina Silva Dias.
 > Plataforma: Databricks Free Edition. Arquitetura: Medalhão (Bronze / Silver / Gold).
 
 ---
