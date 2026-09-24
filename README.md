@@ -68,7 +68,7 @@ perguntas analíticas agregadas por perfil de cliente, não construir um Data Wa
 transacional com múltiplas dimensões reutilizáveis. Com apenas duas fontes (cadastro de cliente
 e histórico de bureau), um esquema estrela adicionaria complexidade de junção sem ganho real de
 performance ou clareza neste escopo. A tabela `gold.fato_risco_cliente` concentra, por cliente,
-tanto os atributos cadastrais quanto as métricas agregadas do bureau — funcionando como uma
+tanto os atributos cadastrais quanto as métricas agregadas do bureau funcionando como uma
 "tabela larga" pronta para consumo, e as demais tabelas Gold são agregações derivadas dela, uma
 por pergunta de negócio.
 
@@ -343,7 +343,7 @@ do problema.
 | 50-59 | 6,1% | 8,9 |
 | 60+ | 4,9% | 11,2 |
 
-- Discussão: relação **monotônica e forte** em ambas as variáveis — quanto mais jovem, maior o
+- Discussão: relação **monotônica e forte** em ambas as variáveis: quanto mais jovem, maior o
   risco (18-29 tem quase o dobro do risco de 60+), e o tempo de emprego cresce de forma
   praticamente proporcional à idade. As duas variáveis estão correlacionadas e reforçam a mesma
   conclusão: estabilidade profissional (medida pelo tempo de emprego, que naturalmente acumula
@@ -373,7 +373,7 @@ do problema.
   grupo. Clientes com dívida ativa ficam numa posição intermediária. Isso reforça a conclusão da
   Pergunta 2: um histórico de crédito positivo é um ativo de informação, e sua ausência pesa mais
   contra o cliente do que se poderia supor. Para uma política de crédito real, isso sugere que
-  histórico de bureau mesmo com dívida em aberto — é preferível a nenhum histórico.
+  histórico de bureau mesmo com dívida em aberto  é preferível a nenhum histórico.
 
 ### Discussão geral
 
@@ -381,7 +381,7 @@ As quatro análises convergem para uma conclusão coerente: **o histórico compo
 (tempo de emprego, histórico de crédito, escolaridade) é um preditor de risco mais forte e mais
 consistente do que atributos estáticos como renda declarada isolada**. O achado mais relevante
 para uma política de crédito é o das Perguntas 2 e 4: ausência de histórico no bureau é, na
-prática, um sinal de risco maior do que ter dívida ativa — algo que pode não ser óbvio em uma
+prática, um sinal de risco maior do que ter dívida ativa  algo que pode não ser óbvio em uma
 política que trate "sem histórico" como neutro. A relação não-linear (em U) entre quantidade de
 créditos e risco (Pergunta 2) também é um ponto de atenção: políticas que usem "quantidade de
 créditos" como variável devem considerar essa curva, não assumir uma relação linear crescente.
@@ -394,11 +394,14 @@ créditos" como variável devem considerar essa curva, não assumir uma relaçã
 Além da análise exploratória, foi implementado o pipeline completo na arquitetura medalhão, contemplando as camadas Bronze, Silver e Gold, desde a ingestão dos dados brutos até a construção das tabelas analíticas utilizadas nas respostas às perguntas de negócio. O pipeline foi executado sobre uma base de 307.511 clientes, com tratamento e documentação de uma anomalia conhecida no campo DAYS_EMPLOYED e realização de verificações de qualidade relacionadas a completude, unicidade, consistência e outliers.
 Um dos principais ganhos do trabalho foi transformar os dados brutos em informações com interpretação de negócio. Entre os resultados mais relevantes, destacam-se a relação não linear entre a quantidade de créditos no bureau e a taxa de inadimplência e o maior risco observado entre clientes sem histórico de crédito externo em comparação com clientes que possuíam dívida ativa. Esses resultados demonstram que a análise permitiu ir além de simples estatísticas descritivas e identificar padrões que podem ser relevantes para decisões de crédito.
 O desenvolvimento do projeto proporcionou um aprendizado importante tanto do ponto de vista técnico quanto da aplicação dos conceitos de dados a um problema de negócio. Na parte técnica, foi possível colocar em prática conceitos de arquitetura medalhão, organização de pipelines em camadas Bronze, Silver e Gold, transformação e tipagem de dados, agregação, construção de tabelas analíticas e utilização do Unity Catalog para documentação e linhagem dos dados.
+
 - **Objetivos não atingidos e por quê:** Os objetivos inicialmente definidos para o MVP foram atingidos, porém algumas análises poderiam ter sido aprofundadas. Em função do prazo reduzido para desenvolvimento e entrega do projeto, foi necessário priorizar a construção e execução do pipeline completo, a organização das camadas Bronze, Silver e Gold, as verificações de qualidade e a resposta às quatro perguntas de negócio propostas.
 Como consequência dessa priorização, não foi possível explorar todo o potencial do dataset. A análise ficou concentrada nas tabelas application_train e bureau e teve caráter predominantemente descritivo. Algumas possibilidades de aprofundamento, como a incorporação de outras tabelas, a análise de interações entre variáveis e a construção de um modelo preditivo, ficaram como oportunidades para uma etapa posterior.
+
 - **Dificuldades encontradas:** Durante o desenvolvimento, foram encontradas dificuldades tanto na preparação dos dados quanto na utilização da plataforma. Um dos principais pontos foi o tratamento da anomalia DAYS_EMPLOYED = 365243, utilizada no dataset como representação de clientes sem vínculo empregatício formal. Foi necessário identificar esse comportamento, definir o tratamento adequado e verificar posteriormente se a transformação havia sido aplicada de forma consistente.
 Também houve dificuldades relacionadas ao processo de disponibilização dos dados pelo Kaggle e à implementação dos comentários e metadados no Unity Catalog, incluindo problemas de sintaxe relacionados ao uso de aspas. Essas situações exigiram ajustes durante a implementação do pipeline.
 Essas dificuldades foram importantes para o desenvolvimento do trabalho, pois exigiram não apenas a execução das transformações, mas também a validação dos resultados e a documentação das decisões tomadas ao longo do processo.
+
 - **Trabalhos futuros:** Como evolução do projeto, seria possível incorporar outras tabelas disponíveis no dataset original, especialmente previous_application.csv, ampliando o histórico de relacionamento do cliente e permitindo análises mais completas.
 Outra possibilidade seria aprofundar o tratamento dos outliers, principalmente o valor extremo identificado em renda_total, caso os dados fossem utilizados posteriormente para construção de um modelo preditivo. Também seria relevante investigar de forma mais detalhada a interação entre renda e valor do crédito solicitado, uma vez que a análise mostrou que a renda isoladamente não apresenta uma relação linear clara com o risco.
 Por fim, o pipeline construído neste MVP poderia servir como base para uma etapa posterior de modelagem preditiva, incorporando novas variáveis, análises multivariadas e técnicas de Machine Learning para avaliar de forma conjunta os fatores associados à inadimplência.
