@@ -379,9 +379,9 @@ do problema.
 
 As quatro análises convergem para uma conclusão coerente: **o histórico comportamental do cliente
 (tempo de emprego, histórico de crédito, escolaridade) é um preditor de risco mais forte e mais
-consistente do que atributos estáticos como renda declarada isolada**. O achado mais relevante
+consistente do que atributos estáticos como renda declarada isolada**. O resultado mais importante
 para uma política de crédito é o das Perguntas 2 e 4: ausência de histórico no bureau é, na
-prática, um sinal de risco maior do que ter dívida ativa  algo que pode não ser óbvio em uma
+prática, um sinal de risco maior do que ter dívida ativa, algo que pode não ser óbvio em uma
 política que trate "sem histórico" como neutro. A relação não-linear (em U) entre quantidade de
 créditos e risco (Pergunta 2) também é um ponto de atenção: políticas que usem "quantidade de
 créditos" como variável devem considerar essa curva, não assumir uma relação linear crescente.
